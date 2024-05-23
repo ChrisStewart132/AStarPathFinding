@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PathFinding : MonoBehaviour
 {
-    public Color path_color = new Color(1f, 1f, 1f,1f);
-    public int MAX_DEPTH = 256;
+    Color path_color = new Color(1f, 1f, 1f, 0.1f);
+    int MAX_DEPTH = 4096;
+
     // returns an optimal path to the target within some constraints
     public Path path(Vector3 start, Vector3 goal)
     {
@@ -335,7 +336,7 @@ public class AFrontier : Frontier
     {
         int cost = Mathf.Abs(start.x - goal.x);
         cost += Mathf.Abs(start.y - goal.y);
-        return cost;
+        return cost*20;
     }
 
     public override void add(PathNode path)
@@ -405,20 +406,6 @@ public static class GenericSearch
                 Arc neighbour = neighbours[i];
                 neighbour.cost += World.getCost(neighbour.head);
                 PathNode newPath = new PathNode(path, neighbour);
-               
-
-                // check if previous arc in path has same direction (and therefore adjust so tail1->head1, tail2->head2 = tail1->head2 with cost=2
-                // Arc includes a direction/action integer    
-                /*
-                Arc prev = path.end();
-                if (prev.action == neighbour.action)
-                {
-                    neighbour.tail = prev.tail;
-                    neighbour.cost += prev.cost;
-
-                    newPath.remove(newPath.size() - 1);// remove prev arc
-                    depth--;
-                }*/
 
                 // O(log frontier.size()) heap insert
                 frontier.add(newPath);
