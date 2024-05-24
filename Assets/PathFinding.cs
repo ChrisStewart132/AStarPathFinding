@@ -1,34 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/**
+ * 
+ * 
+ */
 public class PathFinding : MonoBehaviour
 {
     Color path_color = new Color(1f, 1f, 1f, 0.1f);
-    int MAX_DEPTH = 4096;
+    int MAX_DEPTH = 64;
+    public Frontier frontier;// frontier is saved to continue searches that timed out
+    public Vector3Int target;// holds the target of the saved frontier to continue searching if path called again
 
     // returns an optimal path to the target within some constraints
     public Path path(Vector3 start, Vector3 goal)
     {
         Vector3Int start_cell = World.snapToGrid(start);
-        Vector3Int goal_cell = World.snapToGrid(goal);
-        Debug.Log(goal_cell);
-        Graph graph = new Grid2DGraph(start_cell, goal_cell);
-        Frontier frontier = new AFrontier(goal_cell);
-        List<Path> solutions = GenericSearch.genericSearch(graph, frontier, MAX_DEPTH);
-        Path solution;
+        Vector3Int goal_cell = World.snapToGrid(goal);        
 
+        // reset target/frontier in favour of a new path
+        if(frontier == null || goal_cell != this.target)
+        {
+            frontier = new AFrontier(goal_cell);
+            this.target = goal_cell;
+        }
+
+
+        Graph graph = new Grid2DGraph(start_cell, goal_cell);
+        List<Path> solutions = GenericSearch.genericSearch(graph, frontier, MAX_DEPTH);
+        Path solution=null;
         if (solutions.Count > 0)
         {
             solution = solutions[0];
+            frontier = null;
         }
-        else // no solution returned
-        {
-            solution = new Path();
-            solution.insert(new Arc(new Vector3Int(0,0,0), start_cell, -1, 0));
-            solution.insert(new Arc(start_cell, goal_cell, -1, 0));// couldn't find path (depth of search too high), so just assume path from start->target
-        }
-        //Debug.Log(solution.cost);
         return solution;
     }
 
@@ -336,7 +341,7 @@ public class AFrontier : Frontier
     {
         int cost = Mathf.Abs(start.x - goal.x);
         cost += Mathf.Abs(start.y - goal.y);
-        return cost*20;
+        return cost*10;
     }
 
     public override void add(PathNode path)
@@ -404,6 +409,10 @@ public static class GenericSearch
             for(int i = 0; i < neighbours.Count; i++)
             {
                 Arc neighbour = neighbours[i];
+                /*if(!World.cell_walkable(neighbour.head))
+                {
+                    continue;
+                }*/
                 neighbour.cost += World.getCost(neighbour.head);
                 PathNode newPath = new PathNode(path, neighbour);
 
@@ -414,7 +423,7 @@ public static class GenericSearch
         }
         if(calculatedPaths.Count == 0 && !frontier.isEmpty())// no path in search so just add last path
         {
-            calculatedPaths.Add(PathNode.buildPath(frontier.next()));
+            //calculatedPaths.Add(PathNode.buildPath(frontier.next()));
         }
         return calculatedPaths;
     }
