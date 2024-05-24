@@ -28,6 +28,16 @@ public class Movement : MonoBehaviour
         {
             rb.velocity = direction / Time.deltaTime;// ease to target
         }
+
+        // face left(-) or right(+)
+        if(rb.velocity.x >= 0)
+        {
+            gameObject.GetComponent<SpriteRenderer>().flipX = false;
+        }
+        else
+        {
+            gameObject.GetComponent<SpriteRenderer>().flipX = true;
+        }
         
     }
 

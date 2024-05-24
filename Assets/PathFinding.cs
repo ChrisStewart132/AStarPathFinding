@@ -7,11 +7,10 @@ using UnityEngine;
  */
 public class PathFinding : MonoBehaviour
 {
-    Color path_color = new Color(1f, 1f, 1f, 0.1f);
-    int MAX_DEPTH = 64;
+    int MAX_DEPTH = 1;
     public Frontier frontier;// frontier is saved to continue searches that timed out
     public Vector3Int target;// holds the target of the saved frontier to continue searching if path called again
-
+    public Color color = new Color(1f, 1f, 1f, 0.5f);
     // returns an optimal path to the target within some constraints
     public Path path(Vector3 start, Vector3 goal)
     {
@@ -23,6 +22,10 @@ public class PathFinding : MonoBehaviour
         {
             frontier = new AFrontier(goal_cell);
             this.target = goal_cell;
+        }
+        else
+        {
+            frontier.Draw(color);
         }
 
 
@@ -43,10 +46,18 @@ public class PathFinding : MonoBehaviour
         for(int i = Mathf.Max(1, starting_index); i < path.size(); i++)
         {
             Arc arc = path.get(i);
-            Debug.DrawLine(arc.tail, arc.head, path_color);    
+            Debug.DrawLine(arc.tail, arc.head, color);    
         }
     }
 
+    public void drawFrontier()
+    {
+        if(frontier == null)
+        {
+            return;
+        }
+        frontier.Draw(color);
+    }
     
 }
 
@@ -320,6 +331,8 @@ public abstract class Frontier
 
     // removes and returns the next path from the frontier
     public abstract PathNode next();
+
+    public abstract void Draw(Color color);
 }
 
 public class AFrontier : Frontier
@@ -370,6 +383,31 @@ public class AFrontier : Frontier
         else
         {
             return null;
+        }
+    }
+
+    void DrawSquare(Vector3 center, Color color, float size = 1)
+    {
+        
+        // Calculate the corner points of the square
+        Vector3 halfSize = Vector3.one * size * 0.5f;
+        Vector3 topLeft = center + new Vector3(-halfSize.x, halfSize.y, 0);
+        Vector3 topRight = center + new Vector3(halfSize.x, halfSize.y, 0);
+        Vector3 bottomRight = center + new Vector3(halfSize.x, -halfSize.y, 0);
+        Vector3 bottomLeft = center + new Vector3(-halfSize.x, -halfSize.y, 0);
+
+        // Draw the lines
+        Debug.DrawLine(topLeft, topRight, color);
+        Debug.DrawLine(topRight, bottomRight, color);
+        Debug.DrawLine(bottomRight, bottomLeft, color);
+        Debug.DrawLine(bottomLeft, topLeft, color);
+    }
+
+    public override void Draw(Color color)
+    {
+        foreach (Vector3Int node in nodesExpanded)
+        {
+            DrawSquare(node, color);
         }
     }
 }

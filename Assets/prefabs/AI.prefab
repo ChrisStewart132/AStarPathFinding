@@ -454,6 +454,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0, z: 0}
+  color: {r: 1, g: 0, b: 0, a: 0.5}
 --- !u!58 &7240187655003666418
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -13,7 +13,10 @@ public class MovementCommand : MonoBehaviour
     PathFinding pathFinding;
     public Path path;
     public int pathIndex = 0;
+    int MAX_FRAMES_STUCK = 50 * 5;//allow 5s of time being stuck than resolve
+    int n_frames_stuck = 0;// n_frames stuck consecutively while trying to move
     Vector3 target;// used to continue loading_path to the current target
+
     bool searching = false;// continue loading_path
     int MAX_SEARCHING_FRAMES = 50*60;// how many frames a target path is allowed to
     int SEARCHING_FRAMES = 0;
@@ -63,18 +66,25 @@ public class MovementCommand : MonoBehaviour
             searching = false;
         }
 
+        if(n_frames_stuck > MAX_FRAMES_STUCK)
+        {
+            pathIndex = Mathf.Max(0, --pathIndex);
+        }
+
         if (path != null)// follow path
         {
             pathFinding.drawPath(path, pathIndex);
             Vector3Int path_waypoint = path.get(pathIndex).head;// current path arc to move to
             if(World.snapToGrid(transform.position) == path_waypoint)// waypoint reached
             {
+                n_frames_stuck = 0;
                 pathIndex++;
                 if (pathIndex >= path.size())//path complete
                     clear_path();
             }
             else
             {
+                n_frames_stuck++;
                 state.set("moving");
                 movement.move_toward(path_waypoint);
             }
