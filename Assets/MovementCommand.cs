@@ -18,7 +18,7 @@ public class MovementCommand : MonoBehaviour
     Vector3 target;// used to continue loading_path to the current target
 
     bool searching = false;// continue loading_path
-    int MAX_SEARCHING_FRAMES = 50*60;// how many frames a target path is allowed to
+    int MAX_SEARCHING_FRAMES = 50*10;// how many frames a target path is allowed to
     int SEARCHING_FRAMES = 0;
     
     void Awake()

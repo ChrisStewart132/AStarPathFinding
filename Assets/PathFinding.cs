@@ -7,7 +7,7 @@ using UnityEngine;
  */
 public class PathFinding : MonoBehaviour
 {
-    int MAX_DEPTH = 1;
+    int MAX_DEPTH = 32;// n nodes searched in the frontier per frame
     public Frontier frontier;// frontier is saved to continue searches that timed out
     public Vector3Int target;// holds the target of the saved frontier to continue searching if path called again
     public Color color = new Color(1f, 1f, 1f, 0.5f);
@@ -41,13 +41,8 @@ public class PathFinding : MonoBehaviour
     }
 
     public void drawPath(Path path, int starting_index)
-    {    
-        
-        for(int i = Mathf.Max(1, starting_index); i < path.size(); i++)
-        {
-            Arc arc = path.get(i);
-            Debug.DrawLine(arc.tail, arc.head, color);    
-        }
+    {
+        Path.drawPath(path, starting_index, this.color);
     }
 
     public void drawFrontier()
@@ -205,6 +200,15 @@ public class Path
     {
         return path[size()-1];
     }
+
+    public static void drawPath(Path path, int starting_index, Color color)
+    {
+        for (int i = Mathf.Max(1, starting_index); i < path.size(); i++)
+        {
+            Arc arc = path.get(i);
+            Debug.DrawLine(arc.tail, arc.head, color);
+        }
+    }
 }
 
 /**
@@ -354,7 +358,7 @@ public class AFrontier : Frontier
     {
         int cost = Mathf.Abs(start.x - goal.x);
         cost += Mathf.Abs(start.y - goal.y);
-        return cost*10;
+        return cost*40;
     }
 
     public override void add(PathNode path)
@@ -406,7 +410,7 @@ public class AFrontier : Frontier
     public override void Draw(Color color)
     {
         foreach (Vector3Int node in nodesExpanded)
-        {
+        {// draw all the cells/nodes/positions that have been expanded
             DrawSquare(node, color);
         }
     }
