@@ -4,6 +4,9 @@
 
 https://github.com/ChrisStewart132/AStarPathFinding/assets/30304173/f1ce349d-2a06-46da-ad71-5618a516ef78
 
+# DEMO2
+
+![A_Star_Pathfinding_Unity_2D_Demo](https://github.com/ChrisStewart132/ChrisStewart132/blob/main/assets/gifs/A_Star_Pathfinding_Unity_2D_Demo.gif?raw=true)
 
 # HOW TO RUN
 
