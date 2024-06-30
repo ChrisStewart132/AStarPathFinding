@@ -98,6 +98,7 @@ public class MovementCommand : MonoBehaviour
         else// idle
         {
             state.set("idle");
+            movement.stop_moving();
         }
 
         if (!searching)
